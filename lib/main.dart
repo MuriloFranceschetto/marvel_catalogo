@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         scaffoldBackgroundColor: Colors.white30,
       ),
-      home: PersonagensList(),
+      home: MyHomePage(),
     );
   }
 }

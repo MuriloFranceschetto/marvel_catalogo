@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:marvel/models/personagem.dart';
+import 'package:marvel/models/response-marvel.dart';
+import 'package:marvel/views/personagem-details.dart';
 
 class PersonagemTile extends StatelessWidget {
-  final Personagem personagem;
+  final Results personagem;
 
   const PersonagemTile(this.personagem);
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = personagem.description.length > 30
-        ? personagem.description.substring(0, 30) + '...'
+    final subtitle = personagem.description.length > 35
+        ? personagem.description.substring(0, 35) + '...'
         : personagem.description;
 
-    // final avatar = personagem.imagem == null || personagem.imagem.isEmpty
-    //     ? CircleAvatar(child: Icon(Icons.person))
-    //     : CircleAvatar(child: Icon(Icons.person));
-
-    final avatar = CircleAvatar(child: Icon(Icons.person));
+    final avatar = CircleAvatar(
+      backgroundImage: NetworkImage(
+          '${this.personagem.thumbnail.path}/portrait_medium.${this.personagem.thumbnail.extension}'),
+    );
 
     return ListTile(
       leading: avatar,
@@ -28,7 +28,13 @@ class PersonagemTile extends StatelessWidget {
         subtitle,
         style: TextStyle(color: Colors.white),
       ),
-      onTap: () => {},
+      onTap: () => {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    PersonagemDetails(this.personagem))),
+      },
     );
   }
 }
