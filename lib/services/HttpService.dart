@@ -8,14 +8,21 @@ class HttpService {
   final String apikey = "2fb461a669954c29884728213b091e3b";
   final String privateKey = "b68c9eabffc16e519622e7bdf2c33205a6635781";
 
-  Future<List<Results>> getAll() async {
+  Future<List<Results>> getAll(String nome) async {
     int ts = DateTime.now().millisecondsSinceEpoch;
     String hash = md5
         .convert(utf8.encode('$ts${this.privateKey}${this.apikey}'))
         .toString();
 
-    final url =
-        Uri.parse('${this.url}characters?ts=$ts&apikey=$apikey&hash=$hash');
+    String filterName = '';
+    if (nome != null && nome != '') {
+      filterName = 'nameStartsWith=$nome';
+    }
+
+    final url = Uri.parse(
+        '${this.url}characters?$filterName&ts=$ts&apikey=$apikey&hash=$hash');
+
+    print(url);
 
     var response = await http.get(url);
     var responseParsed = parseResponse(response.body);
