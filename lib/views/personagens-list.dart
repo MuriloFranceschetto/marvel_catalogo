@@ -11,17 +11,8 @@ class MyHomePage extends StatefulWidget {
 class PersonagensList extends State<MyHomePage> {
   final HttpService http = HttpService();
 
-  List<Results> personagens;
   bool searching = false;
   TextEditingController searchForm = TextEditingController();
-
-  buscaPersonagens() async {
-    await http.getAll(searchForm.value.text).then((value) => {
-          setState(() async {
-            this.personagens = value;
-          })
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +30,7 @@ class PersonagensList extends State<MyHomePage> {
                 ),
                 controller: searchForm,
                 onSubmitted: (value) {
-                  setState(() {
-                    buscaPersonagens();
-                  });
+                  print(value);
                 },
               ),
         actions: <Widget>[
@@ -60,15 +49,23 @@ class PersonagensList extends State<MyHomePage> {
                       searchForm.value = TextEditingValue(text: '');
                       this.searching = false;
                     });
-                  },
-                ),
+                  }),
         ],
       ),
-      body: ListView(
-        children: this
-            .personagens
-            .map((Results result) => PersonagemTile(result))
-            .toList(),
+      body: FutureBuilder(
+        future: http.getAll(),
+        builder: (BuildContext context, AsyncSnapshot<List<Results>> snapshot) {
+          if (snapshot.hasData) {
+            List<Results> personagens = snapshot.data;
+            return ListView(
+              children: personagens
+                  .map((Results result) => PersonagemTile(result))
+                  .toList(),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
