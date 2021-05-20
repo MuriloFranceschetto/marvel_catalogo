@@ -14,8 +14,19 @@ class PersonagensList extends State<MyHomePage> {
   bool searching = false;
   TextEditingController searchForm = TextEditingController();
 
+  List<Results> personagens = [];
+
+  Future<List<Results>> _futureSearch = HttpService().getAll('');
+
   @override
   Widget build(BuildContext context) {
+    buscarPorNome() {
+      setState(() {
+        this.personagens = [];
+        _futureSearch = http.getAll(this.searchForm.value.text);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: !searching
@@ -30,7 +41,7 @@ class PersonagensList extends State<MyHomePage> {
                 ),
                 controller: searchForm,
                 onSubmitted: (value) {
-                  print(value);
+                  buscarPorNome();
                 },
               ),
         actions: <Widget>[
@@ -52,11 +63,11 @@ class PersonagensList extends State<MyHomePage> {
                   }),
         ],
       ),
-      body: FutureBuilder(
-        future: http.getAll(),
+      body: new FutureBuilder(
+        future: _futureSearch,
         builder: (BuildContext context, AsyncSnapshot<List<Results>> snapshot) {
           if (snapshot.hasData) {
-            List<Results> personagens = snapshot.data;
+            personagens = snapshot.data;
             return ListView(
               children: personagens
                   .map((Results result) => PersonagemTile(result))
